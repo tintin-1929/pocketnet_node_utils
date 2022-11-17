@@ -54,7 +54,7 @@ while True:
 		if int(tmpver[2]) < LAV[2] and int(tmpver[1]) <= LAV[1]:
 			print("This node has an old minor version")
 			print("pocketcoin-cli setban \""+ tmpip[0] +"\" add 9999999999")
-			bh = subprocess.check_output('pocketcoin-cli setban \"' + tempip[0] + '\" add 9999999999', shell=True)
+			bh = subprocess.check_output('pocketcoin-cli setban \"' + tmpip[0] + '\" add 9999999999', shell=True)
 			print(bh)
 			continue
 		print("*********************")
