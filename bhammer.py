@@ -19,7 +19,7 @@ import logging
 logging.basicConfig(filename='bhammer.log', encoding='utf-8', level=logging.DEBUG)
 
 logging.debug("***************************************************************************************")
-logging.debug("************************** Starting bHammer Version: 0.00.02 **************************")
+logging.debug("************************** Starting bHammer Version: 0.0.2 ****************************")
 logging.debug("***************************************************************************************")
 
 #Set Lowest Acceptable Version
