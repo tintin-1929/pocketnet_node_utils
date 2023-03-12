@@ -17,7 +17,7 @@ import logging
 import sys
 
 #configure logging
-logging.basicConfig(filename='bhammer.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='bhammer.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
 
 logging.debug("***************************************************************************************")
 logging.debug("************************** Starting bHammer Version: 0.0.3 ****************************")
