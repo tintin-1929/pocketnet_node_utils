@@ -1,7 +1,7 @@
 # Ban Hammer by James Lawrence
 #
 # Filename: bhammer.py
-# Version: 0.0.3
+# Version: 0.0.4
 # Date: 16 NOV 2022
 # A Script to ban downlevel Pocketcoin Nodes
 #
