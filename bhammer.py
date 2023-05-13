@@ -1,8 +1,8 @@
 # Ban Hammer by James Lawrence
 #
 # Filename: bhammer.py
-# Version: 0.0.6
-# Date: 8 May 2023
+# Version: 0.0.7
+# Date: 13 May 2023
 # A Script to ban downlevel Pocketcoin Nodes
 #
 # Freely use or distribute this code. No warrenties of anykind. Use at your own risk
@@ -60,7 +60,7 @@ import configparser
 logging.basicConfig(filename='bhammer.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S %Z')
 
 logging.debug("***************************************************************************************")
-logging.debug("************************** Starting bHammer Version: 0.0.6 ****************************")
+logging.debug("************************** Starting bHammer Version: 0.0.7 ****************************")
 logging.debug("***************************************************************************************")
 
 #Load Settings
@@ -135,11 +135,11 @@ try:
 			#logging.debug("LAV: " + str(LAV))
 			#logging.debug("index: " + str(index))
 
-			#If empty version check is true
-			if int(emptyversioncheck) == 1:
 			#If version string is empty then skip it for now and exit the loop so we don't crash on an empty string
-				if str(peer['subver']) == '':
-					banstat = " - Connected: " + str(connSeconds) + "s"
+			if str(peer['subver']) == '':
+				banstat = " - Connected: " + str(connSeconds) + "s"
+				#If empty version check is true
+				if int(emptyversioncheck) == 1:
 					if str(peer['subver']) == '' and connSeconds >= int(noversionbanseconds):
 						logging.debug("tmpip[0]: " + tmpip[0] + " noversionbantime: " + noversionbantime) + "duration: " + str(connSeconds)
 						nodeBan(tmpip[0], noversionbantime)
@@ -152,13 +152,13 @@ try:
 						nodeLinePrint(peer, dd, hh, mm, ss, banstat)
 						continue
 
-					peer['subver'] = "*No Verson Info*"
-					
-					logging.debug("Skipped Node: " + peer['addr'] + "  " + peer['subver'] + " " + banstat)
-					
-					dd, hh, mm, ss = getDurationStr(connSeconds)
-					nodeLinePrint(peer, dd, hh, mm, ss, banstat)
-					continue
+				peer['subver'] = "*No Verson Info*"
+				
+				logging.debug("Skipped Node: " + peer['addr'] + "  " + peer['subver'] + " " + banstat)
+				
+				dd, hh, mm, ss = getDurationStr(connSeconds)
+				nodeLinePrint(peer, dd, hh, mm, ss, banstat)
+				continue
 
 			if peer['inbound'] == True:
 				inboundcount += 1
