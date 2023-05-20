@@ -1,8 +1,8 @@
 # Ban Hammer by James Lawrence
 #
 # Filename: bhammer.py
-# Version: 0.0.7
-# Date: 13 May 2023
+# Version: 0.0.8
+# Date: 8 May 2023
 # A Script to ban downlevel Pocketcoin Nodes
 #
 # Freely use or distribute this code. No warrenties of anykind. Use at your own risk
@@ -14,10 +14,12 @@ def nodeLinePrint(peer, dd, hh, mm, ss, banstat):
 							     peer['bytessent'], datetime.fromtimestamp(peer['conntime']).strftime("%m/%d/%Y %I:%M:%S %Z"),
 								    str(dd).zfill(2) + ":" + str(hh).zfill(2) + ":" + str(mm).zfill(2) + ":" + str(ss).zfill(2),
 									  banstat))
+	return None
 
 #Output top/bottem seperators 
 def nodeLineSep():
 	print("-----------------------------------------------------------------------------------------------------------------------------------------------------------------")
+	return None
 
 #Sleep
 def nodeSleep(sleeptime):
@@ -27,6 +29,7 @@ def nodeSleep(sleeptime):
 	now = datetime.datetime.now()
 	print("Sleeping for " + sleeptime + " seconds @ " + now.strftime("%d/%m/%Y %H:%M:%S") + " - Ctrl-C to Exit")
 	time.sleep(int(sleeptime))
+	return None
 
 #Convert seconds to days, hours, minutes and seconds.
 def getDurationStr(connSeconds):
@@ -41,8 +44,19 @@ def getDurationStr(connSeconds):
 	return(dd, hh, mm, ss)
 
 def nodeBan(tmpip, bantime):
+	#logging.debug(tmpip)
+	#logging.debug("pocketcoin-cli setban \""+ tmpip[0] +"\" add \"' + bantime + '\"'")
 	#bh = subprocess.check_output('pocketcoin-cli setban \"'+ tmpip[0] +'\" add 36288000', shell=True)
-	bh = subprocess.check_output('pocketcoin-cli setban \"'+ tmpip[0] +'\" add \"' + bantime + '\"', shell=True)
+	try:
+		bh = subprocess.check_output('pocketcoin-cli setban \"'+ tmpip[0] +'\" add \"' + bantime + '\"', shell=True)
+	except Exception as e:
+		logging.debug("Exception " + e) 
+		logging.debug("tmpip: " + tmpip + " cmd: pocketcoin-cli setban \"'" + tmpip[0] + "\" add \"'" + bantime + "'\"', shell=True")
+		return e
+	
+	return None
+
+
 
 
 #import the nesscary libraries
@@ -60,7 +74,7 @@ import configparser
 logging.basicConfig(filename='bhammer.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S %Z')
 
 logging.debug("***************************************************************************************")
-logging.debug("************************** Starting bHammer Version: 0.0.7 ****************************")
+logging.debug("************************** Starting bHammer Version: 0.0.8 ****************************")
 logging.debug("***************************************************************************************")
 
 #Load Settings
@@ -137,12 +151,14 @@ try:
 
 			#If version string is empty then skip it for now and exit the loop so we don't crash on an empty string
 			if str(peer['subver']) == '':
-				banstat = " - Connected: " + str(connSeconds) + "s"
+				banstat = "Connected: " + str(connSeconds) + "s"
 				#If empty version check is true
 				if int(emptyversioncheck) == 1:
 					if str(peer['subver']) == '' and connSeconds >= int(noversionbanseconds):
-						logging.debug("tmpip[0]: " + tmpip[0] + " noversionbantime: " + noversionbantime) + "duration: " + str(connSeconds)
-						nodeBan(tmpip[0], noversionbantime)
+						#logging.debug("tmpip[0]: " + tmpip[0] + " noversionbantime: " + noversionbantime) + "duration: " + str(connSeconds)
+						banResult = nodeBan(tmpip, noversionbantime)
+						if banResult != None:
+							banstat = banstat + " E: " + banResult
 						peer['subver'] = "*No Verson Info*"
 						
 						logging.debug("peer['conntime']: " + str(peer['conntime']) + " noversionbanseconds: " + str(noversionbanseconds))
@@ -173,8 +189,10 @@ try:
 				if int(tmpver[1]) < int(LAV[1]):
 					#logging.debug("This node has an old major version")
 					#logging.debug("pocketcoin-cli setban \""+ tmpip[0] +"\" add 604800")
-					bh = subprocess.check_output('pocketcoin-cli setban \"'+ tmpip[0] +'\" add 36288000', shell=True)
+					banResult = nodeBan(tmpip, noversionbantime)
 					banstat = "Major version ban - length 36288000 seconds"
+					if banResult != None:
+							banstat = banstat + " E: " + banResult
 					#logging.debug(banstat)
 					#logging.debug(bh)
 					#logging.debug("BAN HAMMERED!!!!!!!!!!!!!")
@@ -194,8 +212,10 @@ try:
 				if int(tmpver[2]) < int(LAV[2]) and int(tmpver[1]) <= int(LAV[1]):
 					#logging.debug("This node has an old minor version")
 					#logging.debug("pocketcoin-cli setban \""+ tmpip[0] +"\" add ")
-					bh = subprocess.check_output('pocketcoin-cli setban \"' + tmpip[0] + '\" add 36288000', shell=True)
+					banResult = nodeBan(tmpip, noversionbantime)
 					banstat = "Minor version ban - length 36288000 seconds"
+					if banResult != None:
+							banstat = banstat + " E: " + banResult
 					#logging.debug(banstat)
 					#logging.debug(bh)
 					#logging.debug("BAN HAMMERED!!!!!!!!!!!!!")
@@ -217,9 +237,11 @@ try:
 				if int(tmpbs) >= int(banbytes) and connSeconds < int(hogcheckstopseconds):
 					#logging.debug("This node has an old minor version")
 					#logging.debug("pocketcoin-cli setban \""+ tmpip[0] +"\" add ")
-					bh = subprocess.check_output('pocketcoin-cli setban \"' + tmpip[0] + '\" add 86400', shell=True)
-					nodeBan(tmpip[0], hogbanseconds)
-					banstat = "Bandwidth ban for length 86400 seconds. Node used: " + str(tmpbs) + "bytes"
+					#bh = subprocess.check_output('pocketcoin-cli setban \"' + tmpip[0] + '\" add 86400', shell=True)
+					banResult = nodeBan(tmpip, hogbanseconds)
+					banstat = "Bandwidth ban for length 86400 seconds. Node used: " + str(tmpbs) + " bytes"
+					if banResult != None:
+							banstat = banstat + " E: " + banResult
 					#logging.debug(banstat)
 					#logging.debug(bh)
 					#logging.debug("BAN HAMMERED!!!!!!!!!!!!!")
